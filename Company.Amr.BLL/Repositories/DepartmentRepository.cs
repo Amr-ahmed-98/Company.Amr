@@ -13,9 +13,10 @@ namespace Company.Amr.BLL.Repositories
     {
         private readonly CompanyDbContext _context; // Null
 
-        public DepartmentRepository()
+        // ASK CLR Create / Inject Object From CompanyDbContext
+        public DepartmentRepository(CompanyDbContext companyDbContext)
         {
-            _context = new CompanyDbContext();
+            _context = companyDbContext;
         }
 
 
