@@ -9,11 +9,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Company.Amr.DAL.Data.Contexts
 {
+    // CLR Will Create Object from CompanyDbContext
     public class CompanyDbContext : DbContext
     {
         public DbSet<Department> departments { get; set; }
 
-        public CompanyDbContext() : base()
+        public CompanyDbContext(DbContextOptions<CompanyDbContext> options) : base(options)
         {
             
         }
@@ -23,9 +24,9 @@ namespace Company.Amr.DAL.Data.Contexts
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server = AMRAHMED\\MSSQLSERVER01; Database = CompanyDb; Trusted_Connection = True ; TrustServerCertificate=True");
-        }
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer("Server = AMRAHMED\\MSSQLSERVER01; Database = CompanyDb; Trusted_Connection = True ; TrustServerCertificate=True");
+        //}
     }
 }

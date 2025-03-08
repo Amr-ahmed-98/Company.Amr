@@ -1,3 +1,8 @@
+using Company.Amr.BLL.Interfaces;
+using Company.Amr.BLL.Repositories;
+using Company.Amr.DAL.Data.Contexts;
+using Microsoft.EntityFrameworkCore;
+
 namespace Company.Amr.PL
 {
     public class Program
@@ -8,6 +13,12 @@ namespace Company.Amr.PL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(); // Register Built-In MVC Services
+            builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>(); // Allow Dependency Injection for DepartmentRepository
+            builder.Services.AddDbContext<CompanyDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            }); // Allow Dependency Injection for CompanyDbContext
+
 
             var app = builder.Build();
 
