@@ -9,43 +9,11 @@ using Company.Amr.DAL.Models;
 
 namespace Company.Amr.BLL.Repositories
 {
-    public class DepartmentRepository : IDepartmentRepository
+    public class DepartmentRepository : GenericRepository<Department>,IDepartmentRepository
     {
-        private readonly CompanyDbContext _context; // Null
-
-        // ASK CLR Create / Inject Object From CompanyDbContext
-        public DepartmentRepository(CompanyDbContext companyDbContext)
+        public DepartmentRepository(CompanyDbContext context) : base(context)
         {
-            _context = companyDbContext;
+            
         }
-
-
-        public IEnumerable<Department> GetAll()
-        {
-            return _context.departments.ToList();
-        }
-        public Department? Get(int id)
-        {
-            return _context.departments.Find(id);
-        }
-        public int Add(Department model)
-        {
-            _context.departments.Add(model);
-            return _context.SaveChanges();
-        }
-        public int Update(Department model)
-        {
-            _context.departments.Update(model);
-            return _context.SaveChanges();
-        }
-
-        public int Delete(Department model)
-        {
-            _context.departments.Remove(model);
-            return _context.SaveChanges();
-        }
-
-
-
     }
 }
