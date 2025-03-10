@@ -13,6 +13,7 @@ namespace Company.Amr.DAL.Data.Contexts
     public class CompanyDbContext : DbContext
     {
         public DbSet<Department> departments { get; set; }
+        public DbSet<Employee> employees { get; set; }
 
         public CompanyDbContext(DbContextOptions<CompanyDbContext> options) : base(options)
         {
@@ -22,6 +23,7 @@ namespace Company.Amr.DAL.Data.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            base.OnModelCreating(modelBuilder);
         }
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
