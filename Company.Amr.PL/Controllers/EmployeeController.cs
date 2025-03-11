@@ -53,7 +53,7 @@ namespace Company.Amr.PL.Controllers
             }
 
 
-            return View();
+            return View(model);
         }
 
 
@@ -72,24 +72,58 @@ namespace Company.Amr.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
+            if (id is null) return BadRequest("Invalid Id");
 
-            return Details(id, "Edit");
+            var employee = _employeeRepository.Get(id.Value);
+
+            if (employee is null) return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
+
+            var employeeDto = new CreateEmployeeDto()
+            {
+                
+                Name = employee.Name,
+                Age = employee.Age,
+                Email = employee.Email,
+                Address = employee.Address,
+                Phone = employee.Phone,
+                Salary = employee.Salary,
+                CreateAt = employee.CreateAt,
+                HiringDate = employee.HiringDate,
+                IsActive = employee.IsActive,
+                IsDeleted = employee.IsDeleted,
+            };
+
+            return View(employeeDto);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int id, Employee employee)
+        public IActionResult Edit([FromRoute] int id, CreateEmployeeDto model)
         {
             if (ModelState.IsValid)
             {
-                if (id != employee.Id) return BadRequest("Invalid Id");
+                //if (id != employee.Id) return BadRequest("Invalid Id");
+                var employee = new Employee()
+                {
+                    Id = id,
+                    Name = model.Name,
+                    Age = model.Age,
+                    Email = model.Email,
+                    Address = model.Address,
+                    Phone = model.Phone,
+                    Salary = model.Salary,
+                    CreateAt = model.CreateAt,
+                    HiringDate = model.HiringDate,
+                    IsActive = model.IsActive,
+                    IsDeleted = model.IsDeleted,
+                };
                 var count = _employeeRepository.Update(employee);
 
                 if (count > 0) return RedirectToAction(nameof(Index));
 
             }
 
-            return View(employee);
+            return View(model);
         }
 
 
