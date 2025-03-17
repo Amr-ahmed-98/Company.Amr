@@ -29,5 +29,7 @@ namespace Company.Amr.PL.Dtos
         public DateTime HiringDate { get; set; }
         [DisplayName("Date of Creation")]
         public DateTime CreateAt { get; set; }
+        
+
     }
 }

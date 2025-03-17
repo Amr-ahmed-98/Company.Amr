@@ -1,6 +1,7 @@
 using Company.Amr.BLL.Interfaces;
 using Company.Amr.BLL.Repositories;
 using Company.Amr.DAL.Data.Contexts;
+using Company.Amr.PL.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Amr.PL
@@ -19,6 +20,15 @@ namespace Company.Amr.PL
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             }); // Allow Dependency Injection for CompanyDbContext
+
+            // Life Time
+            //builder.Services.AddScoped();     // Create Object Life Time Per Request - Unreachable Request
+            //builder.Services.AddTransient();  // Create Object Life Time Per Operation
+            //builder.Services.AddSingleton();  // Create Object Life Time Per App
+
+            builder.Services.AddScoped<IScopedServices, ScopedServices>();              // Per Request
+            builder.Services.AddTransient<ITransentServices, TransentServices>();       // Per Operation
+            builder.Services.AddSingleton<ISingletonServices, SingletonServices>();     // Per App
 
 
             var app = builder.Build();

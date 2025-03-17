@@ -9,23 +9,50 @@ namespace Company.Amr.PL.Controllers
     {
 
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IDepartmentRepository _departmentRepository;
 
-
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        public EmployeeController(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository)
         {
             _employeeRepository = employeeRepository;
+            _departmentRepository = departmentRepository;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? SearchInput)
         {
-            var employees = _employeeRepository.GetAll();
+            IEnumerable<Employee> employees;
+            if (string.IsNullOrEmpty(SearchInput))
+            {
+                 employees = _employeeRepository.GetAll();
+
+            }
+            else
+            {
+                 employees = _employeeRepository.GetByName(SearchInput);
+            }
+            //// Memory of View it like Dictionary
+            //// To Access the Data that not related to the data that you send to view you have 3 properties
+            //// 1. ViewData : Transfer extra information From Controller (Action) To View
+            //// how From ViewData access Dictionary ?
+            //ViewData["Message"] = "Hello From ViewData";
+
+            //// 2. ViewBag  : Transfer extra information From Controller (Action) To View
+            //// how From ViewBag access Dictionary ?
+            ////ViewBag.Message = "Hello From ViewBag";
+            //ViewBag.Message = new {Message = "Hello From ViewBag" };
+
+            // Diffrent From ViewData and ViewBag ?
+            // syntax are diffrent
+            // Deal with ViewBag more flexible
+
 
             return View(employees);
         }
         [HttpGet]
         public IActionResult Create()
         {
+            var departments = _departmentRepository.GetAll();
+            ViewData["departments"] = departments;
             return View();
         }
 
@@ -49,7 +76,10 @@ namespace Company.Amr.PL.Controllers
                 };
 
                 var count = _employeeRepository.Add(employee);
-                if (count > 0) return RedirectToAction(nameof(Index));
+                if (count > 0)  {
+                    TempData["Message"] = "Employee is Created !!";
+                    return RedirectToAction(nameof(Index));
+                };
             }
 
 
@@ -72,6 +102,8 @@ namespace Company.Amr.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
+            var departments = _departmentRepository.GetAll();
+            ViewData["departments"] = departments;
             if (id is null) return BadRequest("Invalid Id");
 
             var employee = _employeeRepository.Get(id.Value);
