@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Company.Amr.DAL.Models;
 
 namespace Company.Amr.PL.Dtos
 {
@@ -29,7 +30,10 @@ namespace Company.Amr.PL.Dtos
         public DateTime HiringDate { get; set; }
         [DisplayName("Date of Creation")]
         public DateTime CreateAt { get; set; }
+
+        public int? DepartmentId { get; set; }
         
+
 
     }
 }

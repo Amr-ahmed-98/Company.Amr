@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Company.Amr.DAL.Models;
 
 namespace Company.Amr.PL.Dtos
 {
@@ -12,5 +13,7 @@ namespace Company.Amr.PL.Dtos
 
         [Required(ErrorMessage = "CreateAt is required !")]
         public DateTime CreateAt { get; set; }
+
+        //public List<Employee> employees { get; set; }
     }
 }
