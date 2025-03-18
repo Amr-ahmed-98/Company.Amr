@@ -157,6 +157,7 @@ namespace Company.Amr.PL.Controllers
                     HiringDate = model.HiringDate,
                     IsActive = model.IsActive,
                     IsDeleted = model.IsDeleted,
+                    DepartmentId = model.DepartmentId
                 };
                 var count = _employeeRepository.Update(employee);
 
