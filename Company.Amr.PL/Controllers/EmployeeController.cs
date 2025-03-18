@@ -147,7 +147,7 @@ namespace Company.Amr.PL.Controllers
                 var employee = new Employee()
                 {
                     Id = id,
-                    Name = model.EmployeeName,
+                    Name = model.Name,
                     Age = model.Age,
                     Email = model.Email,
                     Address = model.Address,
