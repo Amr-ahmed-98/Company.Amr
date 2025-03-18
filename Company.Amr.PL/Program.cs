@@ -1,6 +1,7 @@
 using Company.Amr.BLL.Interfaces;
 using Company.Amr.BLL.Repositories;
 using Company.Amr.DAL.Data.Contexts;
+using Company.Amr.PL.Mapping;
 using Company.Amr.PL.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +21,9 @@ namespace Company.Amr.PL
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             }); // Allow Dependency Injection for CompanyDbContext
+
+            //builder.Services.AddAutoMapper(typeof(EmployeeProfile));
+            builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile())); // Allow Dependency Injection for EmployeeProfile());
 
             // Life Time
             //builder.Services.AddScoped();     // Create Object Life Time Per Request - Unreachable Request

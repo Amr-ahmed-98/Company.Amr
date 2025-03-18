@@ -1,4 +1,5 @@
-﻿using Company.Amr.BLL.Interfaces;
+﻿using AutoMapper;
+using Company.Amr.BLL.Interfaces;
 using Company.Amr.DAL.Models;
 using Company.Amr.PL.Dtos;
 using Microsoft.AspNetCore.Mvc;
@@ -9,12 +10,18 @@ namespace Company.Amr.PL.Controllers
     {
 
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IDepartmentRepository _departmentRepository;
+        //private readonly IDepartmentRepository _departmentRepository;
+        private readonly IMapper _mapper;
 
-        public EmployeeController(IEmployeeRepository employeeRepository, IDepartmentRepository departmentRepository)
+        public EmployeeController(
+            IEmployeeRepository employeeRepository, 
+            //IDepartmentRepository departmentRepository,
+            IMapper mapper
+            )
         {
             _employeeRepository = employeeRepository;
-            _departmentRepository = departmentRepository;
+            //_departmentRepository = departmentRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -51,8 +58,8 @@ namespace Company.Amr.PL.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var departments = _departmentRepository.GetAll();
-            ViewData["departments"] = departments;
+            //var departments = _departmentRepository.GetAll();
+            //ViewData["departments"] = departments;
             return View();
         }
 
@@ -61,20 +68,21 @@ namespace Company.Amr.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                var employee = new Employee()
-                {
-                    Name = model.Name,
-                    Age = model.Age,
-                    Email = model.Email,
-                    Address = model.Address,
-                    Phone = model.Phone,
-                    Salary = model.Salary,
-                    CreateAt = model.CreateAt,
-                    HiringDate = model.HiringDate,
-                    IsActive = model.IsActive,
-                    IsDeleted = model.IsDeleted,
-                };
-
+                //// Manual Mapping
+                //var employee = new Employee()
+                //{
+                //    Name = model.Name,
+                //    Age = model.Age,
+                //    Email = model.Email,
+                //    Address = model.Address,
+                //    Phone = model.Phone,
+                //    Salary = model.Salary,
+                //    CreateAt = model.CreateAt,
+                //    HiringDate = model.HiringDate,
+                //    IsActive = model.IsActive,
+                //    IsDeleted = model.IsDeleted,
+                //};
+                var employee = _mapper.Map<Employee>(model);
                 var count = _employeeRepository.Add(employee);
                 if (count > 0)  {
                     TempData["Message"] = "Employee is Created !!";
@@ -102,28 +110,29 @@ namespace Company.Amr.PL.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            var departments = _departmentRepository.GetAll();
-            ViewData["departments"] = departments;
+            //var departments = _departmentRepository.GetAll();
+            //ViewData["departments"] = departments;
             if (id is null) return BadRequest("Invalid Id");
 
             var employee = _employeeRepository.Get(id.Value);
 
             if (employee is null) return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
 
-            var employeeDto = new CreateEmployeeDto()
-            {
-                
-                Name = employee.Name,
-                Age = employee.Age,
-                Email = employee.Email,
-                Address = employee.Address,
-                Phone = employee.Phone,
-                Salary = employee.Salary,
-                CreateAt = employee.CreateAt,
-                HiringDate = employee.HiringDate,
-                IsActive = employee.IsActive,
-                IsDeleted = employee.IsDeleted,
-            };
+            //var employeeDto = new CreateEmployeeDto()
+            //{
+
+            //    Name = employee.Name,
+            //    Age = employee.Age,
+            //    Email = employee.Email,
+            //    Address = employee.Address,
+            //    Phone = employee.Phone,
+            //    Salary = employee.Salary,
+            //    CreateAt = employee.CreateAt,
+            //    HiringDate = employee.HiringDate,
+            //    IsActive = employee.IsActive,
+            //    IsDeleted = employee.IsDeleted,
+            //};
+            var employeeDto = _mapper.Map<CreateEmployeeDto>(employee);
 
             return View(employeeDto);
         }
@@ -138,7 +147,7 @@ namespace Company.Amr.PL.Controllers
                 var employee = new Employee()
                 {
                     Id = id,
-                    Name = model.Name,
+                    Name = model.EmployeeName,
                     Age = model.Age,
                     Email = model.Email,
                     Address = model.Address,
