@@ -144,22 +144,13 @@ namespace Company.Amr.PL.Controllers
             if (ModelState.IsValid)
             {
                 //if (id != employee.Id) return BadRequest("Invalid Id");
-                var employee = new Employee()
+                var existingEmployee = _employeeRepository.Get(id);
+                if (existingEmployee == null)
                 {
-                    Id = id,
-                    Name = model.Name,
-                    Age = model.Age,
-                    Email = model.Email,
-                    Address = model.Address,
-                    Phone = model.Phone,
-                    Salary = model.Salary,
-                    CreateAt = model.CreateAt,
-                    HiringDate = model.HiringDate,
-                    IsActive = model.IsActive,
-                    IsDeleted = model.IsDeleted,
-                    DepartmentId = model.DepartmentId
-                };
-                var count = _employeeRepository.Update(employee);
+                    return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
+                }
+                var employee = _mapper.Map(model, existingEmployee);
+                var count = _employeeRepository.Update(existingEmployee);
 
                 if (count > 0) return RedirectToAction(nameof(Index));
 
@@ -179,16 +170,20 @@ namespace Company.Amr.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete([FromRoute] int id, Employee employee)
+        public IActionResult Delete([FromRoute] int id)
         {
-            if (ModelState.IsValid)
-            {
-                if (id != employee.Id) return BadRequest("Invalid Id");
+           
+                var employee = _employeeRepository.Get(id);
+                if (employee == null)
+                {
+                    return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
+                }
+                
                 var count = _employeeRepository.Delete(employee);
 
                 if (count > 0) return RedirectToAction(nameof(Index));
 
-            }
+           
 
             return View(employee);
         }

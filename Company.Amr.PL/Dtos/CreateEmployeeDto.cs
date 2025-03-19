@@ -32,8 +32,10 @@ namespace Company.Amr.PL.Dtos
         public DateTime CreateAt { get; set; }
 
         public int? DepartmentId { get; set; }
-        
 
+        public string? DepartmentName { get; set; }
+
+        
 
     }
 }

@@ -10,8 +10,9 @@ namespace Company.Amr.PL.Mapping
         public EmployeeProfile()
         {
             CreateMap<CreateEmployeeDto, Employee>();
-                //.ForMember(d => d.Name , o => o.MapFrom(s => s.EmployeeName));
+            //.ForMember(d => d.Name , o => o.MapFrom(s => s.EmployeeName));
             CreateMap<Employee, CreateEmployeeDto>();
+                //.ForMember(d => d.DepartmentName , o => o.MapFrom(s => s.Department.Name));
         }
     }
 }
