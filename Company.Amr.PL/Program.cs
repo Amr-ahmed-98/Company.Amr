@@ -1,3 +1,4 @@
+using Company.Amr.BLL;
 using Company.Amr.BLL.Interfaces;
 using Company.Amr.BLL.Repositories;
 using Company.Amr.DAL.Data.Contexts;
@@ -15,8 +16,9 @@ namespace Company.Amr.PL
 
             // Add services to the container.
             builder.Services.AddControllersWithViews(); // Register Built-In MVC Services
-            builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>(); // Allow Dependency Injection for DepartmentRepository
+            builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>(); // Allow Dependency Injection for DepartmentRepository
             builder.Services.AddScoped<IEmployeeRepository,EmployeeRepository>(); // Allow Dependency Injection for EmployeeRepository
+            builder.Services.AddScoped<IUnitOfWork,UnitOfWork>(); // Allow Dependency Injection for UnitOfWork
             builder.Services.AddDbContext<CompanyDbContext>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));

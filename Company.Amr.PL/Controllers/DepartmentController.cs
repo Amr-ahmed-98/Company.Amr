@@ -9,18 +9,24 @@ namespace Company.Amr.PL.Controllers
     // MVC Controller
     public class DepartmentController : Controller
     {
-        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
+
+        //private readonly IDepartmentRepository _departmentRepository;
 
         // ASK CLR Create Object From DepartmentRepository
-        public DepartmentController(IDepartmentRepository departmentRepository)
+        public DepartmentController(
+            //IDepartmentRepository departmentRepository
+            IUnitOfWork unitOfWork
+            )
         {
-            _departmentRepository = departmentRepository;
+            _unitOfWork = unitOfWork;
+            //_departmentRepository = departmentRepository;
         }
 
         [HttpGet] // GET: /Department/Index
         public IActionResult Index()
         {
-            var departments = _departmentRepository.GetAll();
+            var departments = _unitOfWork.DepartmentRepository.GetAll();
 
             return View(departments);
         }
@@ -42,7 +48,8 @@ namespace Company.Amr.PL.Controllers
                     CreateAt = model.CreateAt,
                 };
 
-                var count = _departmentRepository.Add(department);
+                 _unitOfWork.DepartmentRepository.Add(department);
+                var count = _unitOfWork.Complete();
                 if (count > 0) return RedirectToAction(nameof(Index));
             }
 
@@ -56,7 +63,7 @@ namespace Company.Amr.PL.Controllers
         {
             if (id is null) return BadRequest("Invalid Id"); // 400 Bad Request
 
-            var department = _departmentRepository.Get(id.Value);
+            var department = _unitOfWork.DepartmentRepository.Get(id.Value);
 
             if (department is null) return NotFound(new { StatusCode = 404, Message = $"Department With Id {id} is Not Found" }); // 404 Not Found
 
@@ -68,7 +75,7 @@ namespace Company.Amr.PL.Controllers
         {
             if (id is null) return BadRequest("Invalid Id"); // 400 Bad Request
 
-            var department = _departmentRepository.Get(id.Value);
+            var department = _unitOfWork.DepartmentRepository.Get(id.Value);
 
             if (department is null) return NotFound(new { StatusCode = 404, Message = $"Department With Id {id} is Not Found" }); // 404 Not Found
 
@@ -95,7 +102,8 @@ namespace Company.Amr.PL.Controllers
                     Name = model.Name,
                     CreateAt = model.CreateAt,
                 };
-                var count = _departmentRepository.Update(department);
+                 _unitOfWork.DepartmentRepository.Update(department);
+                var count = _unitOfWork.Complete();
 
                 if (count > 0) return RedirectToAction(nameof(Index));
 
@@ -149,8 +157,8 @@ namespace Company.Amr.PL.Controllers
             if (ModelState.IsValid)
             {
                 if (id != department.Id) return BadRequest("Invalid Id"); // 400
-                var count = _departmentRepository.Delete(department);
-
+                 _unitOfWork.DepartmentRepository.Delete(department);
+                var count = _unitOfWork.Complete();
                 if (count > 0) return RedirectToAction(nameof(Index));
 
             }

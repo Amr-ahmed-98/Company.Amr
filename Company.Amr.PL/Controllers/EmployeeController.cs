@@ -1,25 +1,30 @@
-﻿using AutoMapper;
+﻿using System.Reflection.Metadata;
+using AutoMapper;
 using Company.Amr.BLL.Interfaces;
 using Company.Amr.DAL.Models;
 using Company.Amr.PL.Dtos;
+using Company.Amr.PL.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Company.Amr.PL.Controllers
 {
     public class EmployeeController : Controller
     {
+        private readonly IUnitOfWork _unitOfWork;
 
-        private readonly IEmployeeRepository _employeeRepository;
+        //private readonly IEmployeeRepository _employeeRepository;
         //private readonly IDepartmentRepository _departmentRepository;
         private readonly IMapper _mapper;
 
         public EmployeeController(
-            IEmployeeRepository employeeRepository, 
+            //IEmployeeRepository employeeRepository, 
             //IDepartmentRepository departmentRepository,
+            IUnitOfWork unitOfWork,
             IMapper mapper
             )
         {
-            _employeeRepository = employeeRepository;
+            _unitOfWork = unitOfWork;
+            //_employeeRepository = employeeRepository;
             //_departmentRepository = departmentRepository;
             _mapper = mapper;
         }
@@ -30,12 +35,12 @@ namespace Company.Amr.PL.Controllers
             IEnumerable<Employee> employees;
             if (string.IsNullOrEmpty(SearchInput))
             {
-                 employees = _employeeRepository.GetAll();
+                employees = _unitOfWork.EmployeeRepository.GetAll();
 
             }
             else
             {
-                 employees = _employeeRepository.GetByName(SearchInput);
+                employees = _unitOfWork.EmployeeRepository.GetByName(SearchInput);
             }
             //// Memory of View it like Dictionary
             //// To Access the Data that not related to the data that you send to view you have 3 properties
@@ -68,23 +73,14 @@ namespace Company.Amr.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                //// Manual Mapping
-                //var employee = new Employee()
-                //{
-                //    Name = model.Name,
-                //    Age = model.Age,
-                //    Email = model.Email,
-                //    Address = model.Address,
-                //    Phone = model.Phone,
-                //    Salary = model.Salary,
-                //    CreateAt = model.CreateAt,
-                //    HiringDate = model.HiringDate,
-                //    IsActive = model.IsActive,
-                //    IsDeleted = model.IsDeleted,
-                //};
+                if(model.Image is not null)
+                model.ImageName = DocumentSettings.UploadFile(model.Image,"images");
+
                 var employee = _mapper.Map<Employee>(model);
-                var count = _employeeRepository.Add(employee);
-                if (count > 0)  {
+                _unitOfWork.EmployeeRepository.Add(employee);
+                var count = _unitOfWork.Complete();
+                if (count > 0)
+                {
                     TempData["Message"] = "Employee is Created !!";
                     return RedirectToAction(nameof(Index));
                 };
@@ -100,7 +96,7 @@ namespace Company.Amr.PL.Controllers
         {
             if (id is null) return BadRequest("Invalid Id");
 
-            var employee = _employeeRepository.Get(id.Value);
+            var employee = _unitOfWork.EmployeeRepository.Get(id.Value);
 
             if (employee is null) return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
 
@@ -114,7 +110,7 @@ namespace Company.Amr.PL.Controllers
             //ViewData["departments"] = departments;
             if (id is null) return BadRequest("Invalid Id");
 
-            var employee = _employeeRepository.Get(id.Value);
+            var employee = _unitOfWork.EmployeeRepository.Get(id.Value);
 
             if (employee is null) return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
 
@@ -144,14 +140,15 @@ namespace Company.Amr.PL.Controllers
             if (ModelState.IsValid)
             {
                 //if (id != employee.Id) return BadRequest("Invalid Id");
-                var existingEmployee = _employeeRepository.Get(id);
+                var existingEmployee = _unitOfWork.EmployeeRepository.Get(id);
                 if (existingEmployee == null)
                 {
                     return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
                 }
                 var employee = _mapper.Map(model, existingEmployee);
-                var count = _employeeRepository.Update(existingEmployee);
 
+                _unitOfWork.EmployeeRepository.Update(existingEmployee);
+                var count = _unitOfWork.Complete();
                 if (count > 0) return RedirectToAction(nameof(Index));
 
             }
@@ -172,18 +169,18 @@ namespace Company.Amr.PL.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Delete([FromRoute] int id)
         {
-           
-                var employee = _employeeRepository.Get(id);
-                if (employee == null)
-                {
-                    return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
-                }
-                
-                var count = _employeeRepository.Delete(employee);
 
-                if (count > 0) return RedirectToAction(nameof(Index));
+            var employee = _unitOfWork.EmployeeRepository.Get(id);
+            if (employee == null)
+            {
+                return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
+            }
 
-           
+            _unitOfWork.EmployeeRepository.Delete(employee);
+            var count = _unitOfWork.Complete();
+            if (count > 0) return RedirectToAction(nameof(Index));
+
+
 
             return View(employee);
         }

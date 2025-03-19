@@ -23,5 +23,6 @@ namespace Company.Amr.DAL.Models
         // Forign Key Must be Nullable
         public int? DepartmentId { get; set; }
         public Department? Department { get; set; }
+        public string? ImageName { get; set; }
     }
 }
