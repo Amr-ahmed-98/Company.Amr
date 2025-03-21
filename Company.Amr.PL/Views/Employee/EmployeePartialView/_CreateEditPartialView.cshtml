@@ -3,7 +3,7 @@
 @inject IDepartmentRepository _departmentRepository
 @{
 	// var Departments = new SelectList(ViewData["departments"] as IEnumerable<Department>, "Id", "Name");
-	var Departments = new SelectList(_departmentRepository.GetAll(), "Id", "Name");
+	var Departments = new SelectList(await _departmentRepository.GetAllAsync(), "Id", "Name");
 }
 
 

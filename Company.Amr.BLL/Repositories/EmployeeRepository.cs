@@ -19,9 +19,9 @@ namespace Company.Amr.BLL.Repositories
             _context = context;
         }
 
-        public List<Employee> GetByName(string name)
+        public async Task<List<Employee>> GetByNameAsync(string name)
         {
-           return _context.employees.Where(E => E.Name.ToLower().Contains(name.ToLower())).Include(E => E.Department).ToList();
+           return await _context.employees.Where(E => E.Name.ToLower().Contains(name.ToLower())).Include(E => E.Department).ToListAsync();
         }
     }
 }

@@ -30,17 +30,17 @@ namespace Company.Amr.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index(string? SearchInput)
+        public async Task<IActionResult> Index(string? SearchInput)
         {
             IEnumerable<Employee> employees;
             if (string.IsNullOrEmpty(SearchInput))
             {
-                employees = _unitOfWork.EmployeeRepository.GetAll();
+                employees = await _unitOfWork.EmployeeRepository.GetAllAsync();
 
             }
             else
             {
-                employees = _unitOfWork.EmployeeRepository.GetByName(SearchInput);
+                employees = await _unitOfWork.EmployeeRepository.GetByNameAsync(SearchInput);
             }
             //// Memory of View it like Dictionary
             //// To Access the Data that not related to the data that you send to view you have 3 properties
@@ -69,7 +69,7 @@ namespace Company.Amr.PL.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateEmployeeDto model)
+        public async Task<IActionResult> Create(CreateEmployeeDto model)
         {
             if (ModelState.IsValid)
             {
@@ -77,8 +77,8 @@ namespace Company.Amr.PL.Controllers
                 model.ImageName = DocumentSettings.UploadFile(model.Image,"images");
 
                 var employee = _mapper.Map<Employee>(model);
-                _unitOfWork.EmployeeRepository.Add(employee);
-                var count = _unitOfWork.Complete();
+                await _unitOfWork.EmployeeRepository.AddAsync(employee);
+                var count = await _unitOfWork.CompleteAsync();
                 if (count > 0)
                 {
                     TempData["Message"] = "Employee is Created !!";
@@ -92,11 +92,11 @@ namespace Company.Amr.PL.Controllers
 
 
         [HttpGet]
-        public IActionResult Details(int? id, string viewName = "Details")
+        public async Task<IActionResult> Details(int? id, string viewName = "Details")
         {
             if (id is null) return BadRequest("Invalid Id");
 
-            var employee = _unitOfWork.EmployeeRepository.Get(id.Value);
+            var employee = await _unitOfWork.EmployeeRepository.GetAsync(id.Value);
 
             if (employee is null) return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
 
@@ -104,13 +104,13 @@ namespace Company.Amr.PL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             //var departments = _departmentRepository.GetAll();
             //ViewData["departments"] = departments;
             if (id is null) return BadRequest("Invalid Id");
 
-            var employee = _unitOfWork.EmployeeRepository.Get(id.Value);
+            var employee = await _unitOfWork.EmployeeRepository.GetAsync(id.Value);
 
             if (employee is null) return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
 
@@ -121,7 +121,7 @@ namespace Company.Amr.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int id, CreateEmployeeDto model)
+        public async Task<IActionResult> Edit([FromRoute] int id, CreateEmployeeDto model)
         {
             if (ModelState.IsValid)
             {
@@ -136,7 +136,7 @@ namespace Company.Amr.PL.Controllers
                 }
 
                 //if (id != employee.Id) return BadRequest("Invalid Id");
-                var existingEmployee = _unitOfWork.EmployeeRepository.Get(id);
+                var existingEmployee = await _unitOfWork.EmployeeRepository.GetAsync(id);
                 if (existingEmployee == null)
                 {
                     return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
@@ -145,9 +145,9 @@ namespace Company.Amr.PL.Controllers
                 var employee = _mapper.Map(model, existingEmployee);
 
                 _unitOfWork.EmployeeRepository.Update(existingEmployee);
-                var count = _unitOfWork.Complete();
+                var count = await _unitOfWork.CompleteAsync();
                 if (count > 0) return RedirectToAction(nameof(Index));
-
+              
             }
 
             return View(model);
@@ -157,24 +157,24 @@ namespace Company.Amr.PL.Controllers
 
 
 
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return Details(id, "Delete");
+            return await Details(id, "Delete");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
 
-            var employee = _unitOfWork.EmployeeRepository.Get(id);
+            var employee = await _unitOfWork.EmployeeRepository.GetAsync(id);
             if (employee == null)
             {
                 return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
             }
 
             _unitOfWork.EmployeeRepository.Delete(employee);
-            var count = _unitOfWork.Complete();
+            var count = await _unitOfWork.CompleteAsync();
             if (count > 0)
             {
                 if(employee.ImageName is not null)
