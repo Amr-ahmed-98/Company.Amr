@@ -95,14 +95,18 @@ namespace Company.Amr.PL.Controllers
         {
             if (ModelState.IsValid)
             {
-                //if (id != department.Id) return BadRequest("Invalid Id"); // 400
-                var department = new Department()
+                var existingDepartment = await _unitOfWork.DepartmentRepository.GetAsync(id);
+
+                if (existingDepartment is null)
                 {
-                    Code = model.Code,
-                    Name = model.Name,
-                    CreateAt = model.CreateAt,
-                };
-                 _unitOfWork.DepartmentRepository.Update(department);
+                    return NotFound(new { StatusCode = 404, Message = $"Department With Id {id} is Not Found" });
+                }
+
+                existingDepartment.Name = model.Name;
+                existingDepartment.Code = model.Code;
+                existingDepartment.CreateAt = model.CreateAt;
+
+                _unitOfWork.DepartmentRepository.Update(existingDepartment);
                 var count = await _unitOfWork.CompleteAsync();
 
                 if (count > 0) return RedirectToAction(nameof(Index));
@@ -152,16 +156,21 @@ namespace Company.Amr.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete([FromRoute] int id, Department department)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            if (ModelState.IsValid)
+            var department = await _unitOfWork.DepartmentRepository.GetAsync(id);
+
+            if (department is null)
             {
-                if (id != department.Id) return BadRequest("Invalid Id"); // 400
+                return NotFound(new { StatusCode = 404, Message = $"Department With Id {id} is Not Found" });
+            }
+
+            if (id != department.Id) return BadRequest("Invalid Id"); // 400
                  _unitOfWork.DepartmentRepository.Delete(department);
                 var count = await _unitOfWork.CompleteAsync();
                 if (count > 0) return RedirectToAction(nameof(Index));
 
-            }
+            
 
             return View(department);
         }
