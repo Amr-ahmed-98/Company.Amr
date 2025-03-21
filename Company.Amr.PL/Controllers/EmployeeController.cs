@@ -114,20 +114,6 @@ namespace Company.Amr.PL.Controllers
 
             if (employee is null) return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
 
-            //var employeeDto = new CreateEmployeeDto()
-            //{
-
-            //    Name = employee.Name,
-            //    Age = employee.Age,
-            //    Email = employee.Email,
-            //    Address = employee.Address,
-            //    Phone = employee.Phone,
-            //    Salary = employee.Salary,
-            //    CreateAt = employee.CreateAt,
-            //    HiringDate = employee.HiringDate,
-            //    IsActive = employee.IsActive,
-            //    IsDeleted = employee.IsDeleted,
-            //};
             var employeeDto = _mapper.Map<CreateEmployeeDto>(employee);
 
             return View(employeeDto);
@@ -139,12 +125,23 @@ namespace Company.Amr.PL.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (model.ImageName is not null && model.Image is not null )
+                {
+                    DocumentSettings.DeleteFile(model.ImageName,"images");
+                }
+
+                if(model.Image is not null)
+                {
+                    model.ImageName = DocumentSettings.UploadFile(model.Image, "images");
+                }
+
                 //if (id != employee.Id) return BadRequest("Invalid Id");
                 var existingEmployee = _unitOfWork.EmployeeRepository.Get(id);
                 if (existingEmployee == null)
                 {
                     return NotFound(new { StatusCode = 404, Message = $"Employee With Id {id} is Not Found" });
                 }
+
                 var employee = _mapper.Map(model, existingEmployee);
 
                 _unitOfWork.EmployeeRepository.Update(existingEmployee);
@@ -178,7 +175,12 @@ namespace Company.Amr.PL.Controllers
 
             _unitOfWork.EmployeeRepository.Delete(employee);
             var count = _unitOfWork.Complete();
-            if (count > 0) return RedirectToAction(nameof(Index));
+            if (count > 0)
+            {
+                if(employee.ImageName is not null)
+                DocumentSettings.DeleteFile(employee.ImageName,"images");
+                return RedirectToAction(nameof(Index));
+            }
 
 
 
