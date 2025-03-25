@@ -2,8 +2,10 @@ using Company.Amr.BLL;
 using Company.Amr.BLL.Interfaces;
 using Company.Amr.BLL.Repositories;
 using Company.Amr.DAL.Data.Contexts;
+using Company.Amr.DAL.Models;
 using Company.Amr.PL.Mapping;
 using Company.Amr.PL.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Amr.PL
@@ -36,6 +38,14 @@ namespace Company.Amr.PL
             builder.Services.AddTransient<ITransentServices, TransentServices>();       // Per Operation
             builder.Services.AddSingleton<ISingletonServices, SingletonServices>();     // Per App
 
+            builder.Services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<CompanyDbContext>();
+
+
+            builder.Services.ConfigureApplicationCookie(config =>
+            {
+                config.LoginPath = "/Account/SignIn";
+            });
 
             var app = builder.Build();
 
@@ -52,6 +62,9 @@ namespace Company.Amr.PL
 
             app.UseRouting();
 
+
+            app.UseAuthentication();
+            app.UseAuthorization();
         
 
             app.MapControllerRoute(

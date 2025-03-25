@@ -4,10 +4,12 @@ using Company.Amr.BLL.Interfaces;
 using Company.Amr.DAL.Models;
 using Company.Amr.PL.Dtos;
 using Company.Amr.PL.Helpers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Company.Amr.PL.Controllers
 {
+    [Authorize]
     public class EmployeeController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

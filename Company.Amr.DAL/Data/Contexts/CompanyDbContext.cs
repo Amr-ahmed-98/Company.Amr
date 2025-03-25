@@ -5,15 +5,18 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Company.Amr.DAL.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.Amr.DAL.Data.Contexts
 {
     // CLR Will Create Object from CompanyDbContext
-    public class CompanyDbContext : DbContext
+    public class CompanyDbContext : IdentityDbContext<AppUser>
     {
         public DbSet<Department> departments { get; set; }
         public DbSet<Employee> employees { get; set; }
+      
 
         public CompanyDbContext(DbContextOptions<CompanyDbContext> options) : base(options)
         {

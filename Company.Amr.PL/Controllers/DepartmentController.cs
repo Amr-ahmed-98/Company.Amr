@@ -2,11 +2,13 @@
 using Company.Amr.BLL.Repositories;
 using Company.Amr.DAL.Models;
 using Company.Amr.PL.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Company.Amr.PL.Controllers
 {
     // MVC Controller
+    [Authorize]
     public class DepartmentController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
