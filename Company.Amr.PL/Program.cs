@@ -39,7 +39,8 @@ namespace Company.Amr.PL
             builder.Services.AddSingleton<ISingletonServices, SingletonServices>();     // Per App
 
             builder.Services.AddIdentity<AppUser, IdentityRole>()
-                .AddEntityFrameworkStores<CompanyDbContext>();
+                .AddEntityFrameworkStores<CompanyDbContext>()
+                .AddDefaultTokenProviders();
 
 
             builder.Services.ConfigureApplicationCookie(config =>
