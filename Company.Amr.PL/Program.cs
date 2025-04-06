@@ -3,8 +3,10 @@ using Company.Amr.BLL.Interfaces;
 using Company.Amr.BLL.Repositories;
 using Company.Amr.DAL.Data.Contexts;
 using Company.Amr.DAL.Models;
+using Company.Amr.PL.Helper;
 using Company.Amr.PL.Mapping;
 using Company.Amr.PL.Services;
+using Company.Amr.PL.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +31,11 @@ namespace Company.Amr.PL
             //builder.Services.AddAutoMapper(typeof(EmployeeProfile));
             builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile())); // Allow Dependency Injection for EmployeeProfile());
 
+            builder.Services.Configure<MailSettings>(builder.Configuration.GetSection(nameof(MailSettings)));
+            builder.Services.AddScoped<IMailService, MailService>(); // Allow Dependency Injection for MailService>
+
+
+
             // Life Time
             //builder.Services.AddScoped();     // Create Object Life Time Per Request - Unreachable Request
             //builder.Services.AddTransient();  // Create Object Life Time Per Operation
@@ -46,6 +53,8 @@ namespace Company.Amr.PL
             builder.Services.ConfigureApplicationCookie(config =>
             {
                 config.LoginPath = "/Account/SignIn";
+                //config.LogoutPath = "/Home/SignIn";
+                //config.ExpireTimeSpan = TimeSpan.FromMinutes(5);
             });
 
             var app = builder.Build();

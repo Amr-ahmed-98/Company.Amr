@@ -62,6 +62,14 @@ namespace Company.Amr.PL.Controllers
 
             return View(employees);
         }
+
+        public async Task<IActionResult> Search(string Search)
+        {
+            var employees = await _unitOfWork.EmployeeRepository.GetByNameAsync(Search);
+            return PartialView("EmployeePartialView/EmployeesTablePartialView", employees);
+        }
+
+
         [HttpGet]
         public IActionResult Create()
         {

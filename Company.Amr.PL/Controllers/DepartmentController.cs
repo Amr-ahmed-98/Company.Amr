@@ -158,6 +158,7 @@ namespace Company.Amr.PL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             var department = await _unitOfWork.DepartmentRepository.GetAsync(id);

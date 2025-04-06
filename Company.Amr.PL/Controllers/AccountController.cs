@@ -1,5 +1,6 @@
 ﻿using Company.Amr.DAL.Models;
 using Company.Amr.PL.Dtos;
+using Company.Amr.PL.Helper;
 using Company.Amr.PL.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +11,13 @@ namespace Company.Amr.PL.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
+        private readonly IMailService _mailService;
 
-        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
+        public AccountController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager, IMailService MailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _mailService = MailService;
         }
 
         #region SignUp
@@ -158,15 +161,13 @@ namespace Company.Amr.PL.Controllers
 
 
                     // Send Email 
-                    var flag = EmailSettings.SendEmail(email);
-                    if (flag)
-                    {
-                        // Check Your Inbox
-
+                    //var flag = EmailSettings.SendEmail(email);
+                   
+                    _mailService.SendEmail(email);
                         return RedirectToAction("checkYourInbox");
 
 
-                    }
+                    
 
                 }
 
@@ -175,6 +176,12 @@ namespace Company.Amr.PL.Controllers
 
             return View("ForgetPassword", model);
 
+        }
+
+
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
 
         [HttpGet]
